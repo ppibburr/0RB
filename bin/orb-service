@@ -1,0 +1,52 @@
+#!/usr/bin/env ruby
+
+$: << File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib')
+require 'orb'
+
+require 'orb/skills/mpv-skill'
+
+if idx=ARGV.index("--test-device")
+  ARGV.delete_at idx
+  
+  class TestDevice < ORB::DeviceSkill
+    def initialize
+      super "test"
+    end
+    
+    @instance = new
+    def self.instance
+      @instance
+    end
+  end
+end
+
+require 'sinatra'
+
+post "/command" do
+  request.body.rewind
+  obj = JSON.parse request.body.read
+  
+  if skill = ORB::Skill.find(txt=obj['text'].strip)
+    next skill.execute(txt.strip)
+  end
+  
+  ORB::UnhandledSkill.execute
+end
+
+get "/devices" do
+  content_type :text
+  
+  ORB::Skill.skills.find_all do |s| s.is_a?(ORB::DeviceSkill) end.map do |s|
+    s.inspect
+  end.join("\n\n")
+end
+
+get "/skills" do
+  content_type :text
+  
+  ORB::Skill.skills.map do |s|
+    s.inspect
+  end.join("\n\n")
+end
+  
+

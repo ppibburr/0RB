@@ -1,0 +1,26 @@
+$: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
+
+require 'orb/skill'
+
+class DeviceSkill < ORB::Skill
+  attr_reader :name
+  def initialize name
+     @name = name
+     matches(/(press) (.*) (.*) times on #{name}/, /(play|swipe|press) (.*) on #{name}/, /(input) (.*) on #{name}/, /(search) (.*) on #{name}/, /(turn) (off|on) #{name}/)
+  end
+  
+  def execute text
+    case @match[2]
+    when "turn"
+      p [:TURN, @match[3]]
+    when "press"
+      if @match[4]
+        p [:REPEAT_PRESS, @match[3]]
+      else
+        p [:PRESS, @match[3]]
+      end
+    when ""
+      p [:TURN, @match[3]]            
+    end
+  end
+end
