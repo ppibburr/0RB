@@ -1,6 +1,7 @@
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..')
 
 require "orb/skill"
+require "orb/provider"
 
 module ORB
   module Media
@@ -69,6 +70,25 @@ module ORB
       end
       
       instance
+    end
+    
+    class MediaProvider < ORB::Provider
+      include ORB::Media::MediaControls
+
+      attr_reader :device
+      def initialize *o
+        super
+        
+        @player = self
+      end
+      
+      def play_item item, device
+        @device = device
+        
+        ORB::Media::MediaSkill.instance.player = self
+          
+        super
+      end
     end
   end
 end

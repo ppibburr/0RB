@@ -26,11 +26,7 @@ module Roku
         Struct.new(*hash.keys).new(*hash.values)
       end
     end
-  end
-end
 
-module Roku
-  class Device
     include HTTParty
 
     class CannotGetInfo < StandardError; end
@@ -94,7 +90,9 @@ module Roku
       self
     end
 
-    [:up, :down, :left, :right, :ok, :home, :back, :reverse, :forward, :play, :select].each do |m|
+    DIRECT_KEYS = [:up, :down, :left, :right, :ok, :home, :back, :reverse, :forward, :play, :select]
+
+    DIRECT_KEYS.each do |m|
       define_method m do |*opts|
         map    = {delay: 0.33}     
       

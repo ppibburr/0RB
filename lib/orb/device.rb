@@ -1,17 +1,20 @@
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..')
 
 require 'orb/skill'
+require 'orb/provider'
 
 module ORB
   class DeviceSkill < ORB::Skill
     module RawDevice
-      def key_press        code;        end
-      def repeat_key_press code, times; end
-      def swipe            dir;         end
-      def input            data;        end
-      def search           query;       end
-      def set_power_state  state;       end
-      def play             item;        end
+      include ORB::HasProvider
+    
+      def key_press        code;               end
+      def repeat_key_press code, times;        end
+      def swipe            dir;                end
+      def input            data;               end
+      def search           query, provider=nil;end
+      def set_power_state  state;              end
+      def play             item, provider=nil; end
     end
     
     class TestRawDevice
@@ -24,14 +27,18 @@ module ORB
       end
     end 
   
-    attr_reader :name, :raw
-    def initialize name
-       @name = name
+    attr_reader :name, :raw, :config
+    def initialize config={}
+       @config = config
+       @name = config['name']
        @raw  = TestRawDevice.new
        
        super
        
-       matches(/(press) (.*) (.*) times on #{name}/, /(play|swipe|press|input|search) (.*) on #{name}/, /(turn|power) (on|off) #{name}/)
+       matches(/(press) (.*) (.*) times on #{name}/, 
+               /(play) (.*) from (.*) on #{name}/,
+               /(play|swipe|press|input|search) (.*) on #{name}/,
+               /(turn|power) (on|off) #{name}/)
     end
     
     def execute text
@@ -57,7 +64,11 @@ module ORB
         end
         
       when /(play|swipe|search|input)/
-        raw.send $1.to_sym, @match[3]            
+        cmd = $1
+        
+        cmd = "play_item" if cmd == "play"
+        
+        raw.send cmd.to_sym, @match[3], @match[4]            
       end
       
       say 'O K'

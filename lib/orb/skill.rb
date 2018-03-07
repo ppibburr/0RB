@@ -3,6 +3,8 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..')
 require 'json'
 require 'open-uri'
 
+require "orb"
+
 module ORB
   class Skill
     MIMIC_PATH = File.expand_path("#{ENV['HOME']}/mycroft-core/mimic/mimic")

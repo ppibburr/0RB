@@ -1,24 +1,16 @@
 #!/usr/bin/env ruby
 
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib')
+
 require 'orb'
-
 require 'orb/skills/mpv-skill'
+require 'orb/skills/android-adb-skill'
+require 'orb/providers/android/youtube'
+require 'orb/providers/android/netflix'
+require 'orb/skills/send-mail-skill'
+require 'orb/skills/send-sms-skill'
 
-if idx=ARGV.index("--test-device")
-  ARGV.delete_at idx
-  
-  class TestDevice < ORB::DeviceSkill
-    def initialize
-      super "test"
-    end
-    
-    @instance = new
-    def self.instance
-      @instance
-    end
-  end
-end
+ORB.init
 
 require 'sinatra'
 

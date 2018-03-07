@@ -80,7 +80,7 @@ class MPVSkill < ORB::Skill
     super
     player
     
-    matches(/play (.*) from youtube/, /play (.*) music/, /play (.*) on youtube/) 
+    matches(/play (.*) from youtube$/, /play (.*) music$/, /play (.*) on youtube$/) 
   end
   
   def execute text=''
