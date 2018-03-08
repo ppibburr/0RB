@@ -1,10 +1,10 @@
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
 
-require 'orb/send_mail'
+require 'orb/mail'
 require 'orb/skill'
 
 class SendMailSkill < ORB::Skill
-  include ORB::SendMail
+  include ORB::Mail
 
   attr_reader :contacts, :config
   def initialize contacts: ORB::CONTACTS_CONFIG_PATH, config: ORB::MAIL_CONFIG_PATH

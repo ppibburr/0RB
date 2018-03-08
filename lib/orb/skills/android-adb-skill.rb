@@ -5,9 +5,7 @@ require 'orb/devices/adb'
 
 class AndroidADBSkill < ORB::DeviceSkill
   def initialize config={}
-    super
-
-    @raw = ADBDevice.new(config['ip'])
+    super config, ADBDevice, config['ip']
   end
   
   def store

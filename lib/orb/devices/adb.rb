@@ -92,6 +92,8 @@ class ADBDevice
   attr_accessor :ip
   def initialize ip
     @ip = ip
+    p [:ip, ip]
+    `adb connect #{ip}`
   end
   
   private

@@ -10,7 +10,13 @@ module ORB
     def search     item, device; end
   end
   
-  module HasProvider    
+  module HasProvider
+    def load_providers config
+      (config['providers'] ||= []).each do |p|
+        add_provider p['name'], ::Object.const_get(p['class'].to_sym).new
+      end    
+    end
+      
     def find_provider name
       providers[name.to_sym]
     end    

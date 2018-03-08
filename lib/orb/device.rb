@@ -28,12 +28,14 @@ module ORB
     end 
   
     attr_reader :name, :raw, :config
-    def initialize config={}
+    def initialize config={}, klass=TestRawDevice, *o
        @config = config
        @name = config['name']
-       @raw  = TestRawDevice.new
+       @raw  = klass.new(*o)
        
        super
+       
+       @raw.load_providers config
        
        matches(/(press) (.*) (.*) times on #{name}/, 
                /(play) (.*) from (.*) on #{name}/,
