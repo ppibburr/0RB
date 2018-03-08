@@ -5,6 +5,10 @@ require 'orb/provider'
 
 module ORB
   class DeviceSkill < ORB::Skill
+    DEVICE_KEYWORDS = [
+      /^(play|search|watch|listen|press|input|swipe)/,
+    ]  
+  
     module RawDevice
       include ORB::HasProvider
     
@@ -37,10 +41,12 @@ module ORB
        
        @raw.load_providers config
        
-       matches(/(press) (.*) (.*) times on #{name}/, 
-               /(play) (.*) from (.*) on #{name}/,
-               /(play|swipe|press|input|search) (.*) on #{name}/,
-               /(turn|power) (on|off) #{name}/)
+       matches(/^(press) (.*) (.*) times on #{name}/,
+               /^(play) (.*) on (.*) from (.*) on #{name}/, 
+               /^(play) (.*) from (.*) on #{name}/,
+               /^(search) (.*) on (.*) on #{name}/, 
+               /^(play|swipe|press|input|search) (.*) on #{name}/,
+               /^(turn|power) (on|off) #{name}/)
     end
     
     def execute text
@@ -72,11 +78,39 @@ module ORB
         
         p match
         
-        raw.send cmd.to_sym, @match[3], @match[4]            
+        if text.scan("on").length > 1
+          raw.send cmd.to_sym, "#{@match[3]} on #{@match[4]}", @match[5]
+        else    
+          raw.send cmd.to_sym, @match[3], @match[4] 
+        end      
+      else
+        say "The device, #{name}, does not know that."
+      
+        return     
       end
+      
+      DeviceSkill.active_device = self
       
       say 'O K'
       ''
+    end
+    
+    def on_active; end
+    
+    class << self
+      attr_reader :active_device
+      
+      def active_device= d
+        d.on_active if d
+        @active_device = d
+      end 
+      
+      def find name
+        ORB::Skill.skills.find do |s|
+          p [s.name, name] if s.respond_to?(:name)
+          s.is_a?(ORB::DeviceSkill) and s.name == name
+        end      
+      end
     end
   end
 end

@@ -55,6 +55,10 @@ class RokuSkill < ORB::DeviceSkill
       end
     end
     
+    def set_power_state state
+      roku.power_on
+    end
+    
     def input text
     
     end    

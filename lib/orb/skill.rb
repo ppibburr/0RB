@@ -7,10 +7,18 @@ require "orb"
 
 module ORB
   class Skill
-    MIMIC_PATH = File.expand_path("#{ENV['HOME']}/mycroft-core/mimic/mimic")
-
-    def say text
-      cmd="#{MIMIC_PATH} -t \" #{text}\""
+    MIMIC_PATHS = {
+      system: File.expand_path("/opt/mycroft/voices/mimic_tn"),
+      source: File.expand_path("#{ENV['HOME']}/mycroft-core/mimic/mimic")
+    }
+    
+    def say text, voice: nil, mimic: :system
+      mimic = MIMIC_PATHS[mimic]
+      
+      mimic = MIMIC_PATHS[:source] if !mimic or !File.exist?(mimic) or (voice and mimic == MIMIC_PATHS[:system])
+      mimic = MIMIC_PATHS[:system] if !mimic or !File.exist?(mimic)
+    
+      cmd="#{mimic} -t \" #{text}\"#{voice ? " -voice #{voice}" : ''}"
       system cmd
     end
     
@@ -43,7 +51,7 @@ module ORB
     
     def self.find text
       skills.find do |s| s.match? text end
-    end
+    end    
   end
 
   class UnhandledSkill < Skill

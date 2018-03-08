@@ -13,7 +13,7 @@ class YouTubeAndroidProvider < ORB::Media::MediaProvider
       
     uri = "https://www.youtube.com/results?search_query=#{item.gsub(" ", "+")}"
     result = open(uri).read
-    songs = result.scan(/(\/watch\?.*?v\=.*?)\&amp\;/).map do |u| "http://youtube.com#{u[0]}" end
+    songs = result.scan(/\/watch\?.*?v\=(.*?)\"/).map do |u| "http://youtube.com#{u[0].split("&")[0]}" end
     
     if songs and song = songs[0]
       device.shell "am start -a android.intent.action.VIEW -d \"#{song}\""

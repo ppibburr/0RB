@@ -48,11 +48,15 @@ module ORB
         matches(/^pause$/, /^play$/, /^resume$/, /^next track$/, /^stop$/, /^next$/, /^prev$/, /^previous track$/)
       end
       
+      attr_accessor :default_player
+      
       def execute text
         if !player
-          return '' if text.strip == "stop"
-          say "No media is playing"
-          return ''
+          if !ORB::Media::MediaSkill.instance.player and d=ORB::Media::MediaSkill.instance.default_player
+            p @player = d
+          else
+            return ''
+          end
         end
       
         pause      if text.strip == "pause"

@@ -122,7 +122,7 @@ module Roku
     end
     
     def find_then_play query, provider: nil
-      STDERR.puts uri = "/search/browse?keyword=#{query.gsub(" ", "%20")}#{provider ? "&provider=#{provider}" : ""}&launch=true&match-any=true'"
+      STDERR.puts uri = "'/search/browse?keyword=#{query.gsub(" ", "%20")}#{provider ? "&provider-id=#{provider}" : ""}&launch=true&match-any=true'"
       request uri
     end
 

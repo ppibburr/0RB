@@ -9,7 +9,7 @@ require 'orb/skills/roku-skill'
 require 'orb/providers/android/youtube'
 require 'orb/providers/android/netflix'
 require 'orb/providers/roku/youtube'
-#require 'orb/providers/roku/netflix'
+require 'orb/providers/roku/netflix'
 require 'orb/skills/send-mail-skill'
 require 'orb/skills/send-sms-skill'
 
@@ -21,7 +21,42 @@ post "/command" do
   request.body.rewind
   obj = JSON.parse request.body.read
   
-  if skill = ORB::Skill.find(txt=obj['text'].strip)
+  txt=obj['text'].strip
+  
+  if txt =~ /^set device (.*)/
+    if d=ORB::DeviceSkill.find($1.strip)
+      ORB::DeviceSkill.active_device = d
+      next ''
+    else
+      ORB::SelfSkill.instance.say "No Device named, #{$1}"
+    end
+  elsif txt =~ /^unset device/
+    if d=ORB::DeviceSkill.active_device
+      if d.raw.is_a?(ORB::Media::MediaDevice)
+        ORB::Media::MediaSkill.instance.player = nil
+      end
+    end
+  
+    ORB::DeviceSkill.active_device = nil
+    next ''
+  end
+  
+  ORB::DeviceSkill::DEVICE_KEYWORDS.each do |kw|
+    if txt =~ kw and ad=ORB::DeviceSkill.active_device
+      device = txt.split("on").last.strip
+      
+      # Explicit target device
+      if skill=ORB::DeviceSkill.find(device)
+      
+      # Use active device
+      else
+        txt += " on #{ad.name}"
+      end
+    end
+  end
+  
+  if skill = ORB::Skill.find(txt)
+  
     next skill.execute(txt.strip)
   end
   

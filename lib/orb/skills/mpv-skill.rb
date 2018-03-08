@@ -9,6 +9,7 @@ class MPVSkill < ORB::Skill
 
   class Player < MPV::Session
     def initialize
+    p :ONLY_ONE
       super(user_args: ['--no-video'])
       def client.socket
         @socket
@@ -32,6 +33,7 @@ class MPVSkill < ORB::Skill
     end  
     
     def pause
+      p :PAUSESOOS
       command "cycle", "pause"
     end
 
@@ -63,10 +65,10 @@ class MPVSkill < ORB::Skill
   end
 
   def search_yt query
-    uri = "https://www.youtube.com/results?search_query=#{query.gsub(" ", "+")}"
+    uri    = "https://www.youtube.com/results?search_query=#{query.gsub(" ", "+")}"
     result = open(uri).read
-    songs = result.scan(/(\/watch\?.*?v\=.*?)\&amp\;/).map do |u| "http://youtube.com#{u[0]}" end
-    
+    songs  = result.scan(/\/watch\?.*?v\=(.*?)\"/).map do |u| "http://youtube.com/watch?v=#{u[0].split("&")[0]}" end
+    p songs[0]
     if !songs or songs.empty?
       say "No results found. Sorry"
       
@@ -78,9 +80,14 @@ class MPVSkill < ORB::Skill
   
   def initialize
     super
+    
     player
     
-    matches(/play (.*) from youtube$/, /play (.*) music$/, /play (.*) on youtube$/) 
+    ORB::Media::MediaSkill.instance.default_player = self
+    
+    matches(/play (.*) from youtube$/, 
+            /play (.*) music$/,
+            /play (.*) on youtube$/) 
   end
   
   def execute text=''
@@ -96,10 +103,4 @@ class MPVSkill < ORB::Skill
      
      ''
   end
-  
-  def self.instance
-    @ins ||= new
-  end
-  
-  instance
 end

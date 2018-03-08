@@ -3,12 +3,11 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', '..')
 require 'orb/provider'
 require 'orb/media'
 
-class NetflixAndroidProvider < ORB::Media::MediaProvider
+class NetflixRokuProvider < ORB::Media::MediaProvider
   def initialize
     super :netflix
   end
   
-  DWELL = 5.333
   def play_item item, device
     super
   
@@ -16,11 +15,18 @@ class NetflixAndroidProvider < ORB::Media::MediaProvider
 
     if a=raw.scan(/\/title\/([0-9]+)\//)[0]
       id = a[0]
-      device.shell "am start -n com.netflix.mediaclient/.ui.launch.UIWebViewActivity -a android.intent.action.VIEW -d https://www.netflix.com/title/#{id}/"
+      ## Not for netflix
+      # device.roku.request "/launch/12?contentID=#{id}"
       
-      sleep DWELL
-      
-      device.key_press :ok
+      device.roku.find_then_play item, provider: "12"
     end
+  end
+  
+  def pause
+    device.key_press :play
+  end
+  
+  def play
+    device.key_press :play
   end
 end
