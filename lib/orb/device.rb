@@ -70,6 +70,8 @@ module ORB
         
         cmd = "play_item" if cmd == "play"
         
+        p match
+        
         raw.send cmd.to_sym, @match[3], @match[4]            
       end
       

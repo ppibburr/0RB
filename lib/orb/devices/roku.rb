@@ -49,6 +49,7 @@ module Roku
       del: 'Backspace',
       search: 'Search',
       enter: 'Enter',
+      pause: 'Play',
       volume_up: 'VolumeUp',
       volume_down: 'VolumeDown',
       volume_mute: 'VolumeMute'
@@ -73,7 +74,7 @@ module Roku
     def info
       res = Response.new(self.singleton_class.get('/query/device-info'))
       raise CannotGetInfo unless res.ok?
-      res.struct_from_response_key('device_info')
+      i = res.struct_from_response_key('device_info')
     end
 
     def press(keypress)
@@ -88,6 +89,12 @@ module Roku
       end
       
       self
+    end
+    
+    def request path, post: ''
+      cmd = "curl -d '#{post}' #{location}#{path}"
+      p cmd if true
+      `#{cmd}`
     end
 
     DIRECT_KEYS = [:up, :down, :left, :right, :ok, :home, :back, :reverse, :forward, :play, :select]
@@ -115,8 +122,8 @@ module Roku
     end
     
     def find_then_play query, provider: nil
-      STDERR.puts uri = "'192.168.1.130:8060/search/browse?keyword=#{query.gsub(" ", "%20")}#{provider ? "&provider=#{provider=netflix}" : ""}&launch=true&match-any=true'"
-      `curl -d '' #{uri}`
+      STDERR.puts uri = "/search/browse?keyword=#{query.gsub(" ", "%20")}#{provider ? "&provider=#{provider}" : ""}&launch=true&match-any=true'"
+      request uri
     end
 
     def self.devices
@@ -142,7 +149,7 @@ module Roku
         end
         
         info = d.boot_info
-        
+
         if opts.last.is_a? Hash
           map = opts.pop        
         end
@@ -154,7 +161,16 @@ module Roku
         end
         
         (map || {}).each_pair do |k,v|
-          return nil unless info[k] == v
+          if k.to_sym == :ip
+            d.location.to_s =~ /\:\/\/(.*)\:/
+            if $1 and $1 == v
+              next true
+            else
+              return nil
+            end
+          else
+            return nil unless info[k] == v
+          end
         end
         
         true

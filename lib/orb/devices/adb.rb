@@ -4,7 +4,8 @@ require 'orb/device'
 
 class ADBDevice
   include ORB::DeviceSkill::RawDevice
-
+  include ORB::Media::MediaDevice
+  
   KEYS = {
     home:   3,
     back:   4,
@@ -66,14 +67,6 @@ class ADBDevice
     sleep 0.1
     key_press :enter
   end
-  
-  def play_item item, provider=nil
-    if !provider
-      
-    elsif provider=find_provider(provider)
-      provider.play_item item, self
-    end
-  end 
   
   def shell str
     cmd = "adb -s #{ip} shell #{str}"

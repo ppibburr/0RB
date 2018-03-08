@@ -72,6 +72,19 @@ module ORB
       instance
     end
     
+    module MediaDevice
+      def play_item item, provider
+		if !provider
+		  
+		elsif provider=find_provider(provider)
+		  provider.play_item item, self
+		end
+      end
+      
+      def watch     item, device; end
+      def search    item, device; end
+    end    
+    
     class MediaProvider < ORB::Provider
       include ORB::Media::MediaControls
 
