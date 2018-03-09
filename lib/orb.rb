@@ -42,11 +42,14 @@ module ORB
     end
   rescue => e
     p e
+    p e.backtrace
   end 
   
   def self.load_skills
     config(SKILLS_CONFIG_PATH).each do |s|
-      ::Object.const_get(s['class'].to_sym).new()
+      Thread.new do
+        ::Object.const_get(s['class'].to_sym).new()
+      end
     end
   rescue => e
     p e

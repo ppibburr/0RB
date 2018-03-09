@@ -82,9 +82,10 @@ class ADBDevice
     shell "input swipe #{x} #{y} #{x1} #{y1}"
   end
   
-  attr_accessor :ip
-  def initialize ip
-    @ip = ip
+  attr_accessor :ip, :name
+  def initialize name=nil, ip=nil
+    @ip   = ip
+    @name = name
     p [:ip, ip]
     `adb connect #{ip}`
   end

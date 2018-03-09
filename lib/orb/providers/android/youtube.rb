@@ -24,3 +24,4 @@ class YouTubeAndroidProvider < ORB::Media::MediaProvider
     device.key_press :pause
   end
 end
+

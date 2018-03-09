@@ -13,18 +13,25 @@ module ORB
     }
     
     def say text, voice: nil, mimic: :system
+      system ORB::Skill.get_speak_command(text, voice: voice, mimic: mimic)
+    end
+    
+    def self.get_speak_command text, voice: nil, mimic: nil
       mimic = MIMIC_PATHS[mimic]
       
       mimic = MIMIC_PATHS[:source] if !mimic or !File.exist?(mimic) or (voice and mimic == MIMIC_PATHS[:system])
       mimic = MIMIC_PATHS[:system] if !mimic or !File.exist?(mimic)
     
       cmd="#{mimic} -t \" #{text}\"#{voice ? " -voice #{voice}" : ''}"
-      system cmd
+      
+      p cmd if true
+      
+      cmd    
     end
     
     attr_reader :match
     def match? text  
-      (@matches ||= []).find do |m|
+      (matches).find do |m|
         if text =~ m
           @match = [m].push(*$~)
         end
@@ -46,7 +53,8 @@ module ORB
     end
     
     def matches *r
-      @matches = r
+      @matches = r if !r.empty?
+      @matches ||= []
     end
     
     def self.find text
@@ -73,7 +81,7 @@ module ORB
     end
     
     def execute text
-      case @matches.index(@match[0])
+      case matches.index(@match[0])
       when 0
         say "Yes"
       when 1

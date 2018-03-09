@@ -17,7 +17,7 @@ module ORB
       end    
     end
       
-    def find_provider name
+    def find_provider name, match=nil
       providers[name.to_sym]
     end    
     

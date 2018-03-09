@@ -77,16 +77,16 @@ module ORB
     end
     
     module MediaDevice
-      def play_item item, provider
+      def play_item item, provider, match=nil
 		if !provider
 		  
-		elsif provider=find_provider(provider)
+		elsif provider=find_provider(provider, match)
 		  provider.play_item item, self
 		end
       end
       
-      def watch     item, device; end
-      def search    item, device; end
+      def watch     item, device, match=nil; end
+      def search    item, device, match=nil; end
     end    
     
     class MediaProvider < ORB::Provider
