@@ -9,13 +9,9 @@ require 'orb/skills/roku-skill'
 require 'orb/skills/chrome-cast-skill'
 require 'orb/skills/cc-broadcast-skill'
 require 'orb/skills/tplink-wifi-plug-skill'
-require 'orb/providers/chromecast/cc-youtube-provider'
-require 'orb/providers/android/youtube'
-require 'orb/providers/android/netflix'
-require 'orb/providers/roku/youtube'
-require 'orb/providers/roku/netflix'
 require 'orb/skills/send-mail-skill'
 require 'orb/skills/send-sms-skill'
+require 'orb/skills/gdax-rate-skill'
 
 ORB.init
 
@@ -47,7 +43,7 @@ post "/command" do
   
   ORB::DeviceSkill::DEVICE_KEYWORDS.each do |kw|
     if txt =~ kw and ad=ORB::DeviceSkill.active_device
-      device = txt.split("on").last.strip
+      device = txt.split(/ on /).last.strip
       
       # Explicit target device
       if skill=ORB::DeviceSkill.find(device)

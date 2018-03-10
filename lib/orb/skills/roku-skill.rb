@@ -3,6 +3,9 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
 require 'orb/device'
 require 'orb/devices/roku'
 
+require 'orb/providers/roku/netflix'
+require 'orb/providers/roku/youtube'
+
 class RokuSkill < ORB::DeviceSkill
   class RawDevice
     include ORB::DeviceSkill::RawDevice

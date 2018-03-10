@@ -3,6 +3,8 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..', '..')
 require 'orb/provider'
 require 'orb/media'
 
+require 'orb/providers/android/netflix'
+
 class NetflixAndroidProvider < ORB::Media::MediaProvider
   def initialize
     super :netflix

@@ -84,11 +84,11 @@ module ORB
         
         
         
-        if text.scan("on").length > 1
+        if text.scan(/ on /).length > 1
           rest = [@match[5]]
           
           if cmd == "play_item"
-            rest << match
+            rest match
           end
           
           raw.send cmd.to_sym, "#{@match[3]} on #{@match[4]}", *rest

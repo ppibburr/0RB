@@ -3,6 +3,9 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
 require 'orb/device'
 require 'orb/devices/adb'
 
+require 'orb/providers/android/netflix'
+require 'orb/providers/android/youtube'
+
 class AndroidADBSkill < ORB::DeviceSkill
   def initialize config={}
     super config, ADBDevice, config['name'], config['ip']
@@ -11,7 +14,9 @@ end
 
 class AndroidTVSkill < AndroidADBSkill
   require 'orb/devices/chromecast'
-  
+  require 'orb/providers/chromecast/cc-base-provider'
+  require 'orb/providers/chromecast/cc-youtube-provider'
+    
   include ChromeCast::RawChromeCast
   
   def initialize *o

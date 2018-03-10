@@ -38,7 +38,9 @@ module ORB
 
   def self.load_devices
     config(DEVICES_CONFIG_PATH).each do |d|
-      ::Object.const_get(d['class'].to_sym).new(d)
+      Thread.new do
+        ::Object.const_get(d['class'].to_sym).new(d)
+      end
     end
   rescue => e
     p e

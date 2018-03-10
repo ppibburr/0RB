@@ -78,11 +78,11 @@ module ORB
     
     module MediaDevice
       def play_item item, provider, match=nil
-		if !provider
-		  
-		elsif provider=find_provider(provider, match)
-		  provider.play_item item, self
-		end
+        if !provider
+          p :NOP
+        elsif provider=find_provider(provider, match)
+          provider.play_item item, self
+        end
       end
       
       def watch     item, device, match=nil; end
