@@ -38,7 +38,11 @@ module ORB
        @name = config['name']
        @raw  = klass.new(*o)
        
-       super
+       super config
+       
+       add_route "/ui" do
+         ui
+       end
        
        @raw.load_providers config
        
@@ -52,6 +56,186 @@ module ORB
                /^(turn|power) (on|off) the #{name!}/,
                /^(turn|power) (on|off) #{name!}/,
                /^(#{name!}) (on|off)/)
+    end
+    
+    def ui
+      """
+<!DOCTYPE html>      
+      <html></head><meta name=viewport content='width=device-width, initial-scale=1.0'><meta name=apple-mobile-web-app-capable content='yes'>
+<meta name='mobile-web-app-capable' content='yes'>
+</head>
+      <style>
+        body {
+          background-color: black;
+          width:100%;
+          max-width:100vw;
+          margin:0;
+          padding:0;
+        }
+        
+        .button {
+          border-radius: 2em;
+        }
+        
+        #up {
+          position: relative;
+          left:6px;        
+          margin-left:33%;
+          width:33%;
+          height:2em;
+          border-top-right-radius: 2em !important;
+          border-top-left-radius: 2em !important;
+        }
+        #down {
+          position: relative;
+          left:6px;
+          margin-left:33%;
+          width:33%;
+          height:2em;
+          border-bottom-right-radius: 2em !important;
+          border-bottom-left-radius: 2em !important;
+        }
+        #left {
+          margin-left:20%;
+          width:16.66%;
+          height:4em;
+          border-top-left-radius: 2em !important;
+          border-bottom-left-radius: 2em !important;
+        }
+        #right {
+          /*margin-left:25%;*/
+          width:16.66%;
+          height:4em;
+          border-top-right-radius: 2em !important;
+          border-bottom-right-radius: 2em !important;
+        }       
+        #enter {
+          border-radius:3em;
+          height:20vw;
+          width:20vw;
+          margin: 12px;
+        } 
+        #power {
+          position: absolute;
+          width:19%;
+          left:80%;
+          height:3em;
+        }
+        #home {
+          height:3em;
+          margin-right:1em;
+        }
+        #back {
+          height:3em;
+        }
+        #input {
+          margin-right:12px;
+        }
+        
+        #bottom {
+          width:100%;
+          margin-left: 22%;
+          flex-grow:3;
+        }
+        
+        #bottom button {
+          width: 16%;
+          height: 3em;
+        }        
+        
+        #toggle {
+          width: 24% !important;
+        }        
+
+        #top {flex-grow:1;}
+    
+
+        #second {
+          width:100%;
+          margin-left: 22%;
+         flex-grow:2;
+        }
+        
+        #second button {
+          width: 16%;
+          height: 3em;
+        }        
+        
+        #menu {
+          width: 24% !important;
+        }
+        
+        #back {
+           border-top-right-radius: 0px;
+           border-bottom-right-radius: 0px;
+        }
+
+        #prev {
+           border-top-right-radius: 0px;
+           border-bottom-right-radius: 0px;
+        }
+
+        #next {
+           border-top-left-radius: 0px;
+           border-bottom-left-radius: 0px;
+        }
+        
+        #nav {
+          width:100%;
+          flex-grow:6;
+        }
+        
+        #container {
+          height:100vh;
+          width:100vw;
+          display: flex;
+          flex-direction:column;
+        }
+      </style>
+      <body>
+      <div id=container>
+      <div id=top>
+      <button id=back class=button>Back</button><button id=home class=button>HOME</button><button id=input class=button>Input</button><button class=button>Search</button><button id=power class=button>I/O</button><br></br>
+      </div>
+      <div id=second>
+        <button id=vol_down class=button>-</button> 
+        <button id=menu class=button>*</button>
+        <button id=vol_up class=button>+</button> 
+      </div>
+
+      <div id=nav>
+      <button id=up>up</button><br>
+      <button id=left>left</button>
+      <button id=enter>enter</button>      
+      <button id=right>right</button><br>      
+      <button id=down>down</button><br>   
+      </div>
+      
+      <div id=bottom>
+        <button id=prev class=button>prev</button> 
+        <button id=toggle class=button>play</button>
+        <button id=next class=button>next</button> 
+      </div>
+      </div>
+      <script>
+
+      var l = ['up','down','left','right','enter','home','back', 'menu'];
+      for (i=0; i < l.length; i++) {
+        console.log(l)
+        document.getElementById(l[i]).onclick = keypress;
+      }
+      
+      function keypress(e) {
+        var key = this.id;
+        console.log(key);
+        var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
+        xmlhttp.open('POST', '/command');
+        xmlhttp.setRequestHeader('Content-Type', 'application/json');
+        xmlhttp.send('{\"text\": \"press '+key+' on #{name.downcase}\"}');
+      }
+      //document.body.requestFullscreen();
+      </script>
+      """
     end
     
     def execute text

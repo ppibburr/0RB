@@ -39,7 +39,7 @@ module ORB
   def self.load_devices
     config(DEVICES_CONFIG_PATH).each do |d|
       Thread.new do
-        ::Object.const_get(d['class'].to_sym).new(d)
+        get_device_class(d['class']).new(d)
       end
     end
   rescue => e
@@ -50,14 +50,26 @@ module ORB
   def self.load_skills
     config(SKILLS_CONFIG_PATH).each do |s|
       Thread.new do
-        ::Object.const_get(s['class'].to_sym).new()
+        get_device_class(s['class']).new(s)
       end
     end
   rescue => e
     p e
   end  
   
-  def self.init
+  def self.get_device_class str
+    c = ::Object
+    
+    str.split("::").each do |e|
+      c = c.const_get e.to_sym
+    end
+    
+    c
+  end
+  
+  def self.init route
+    Skill.route = route
+  
     load_devices
     load_skills
   end

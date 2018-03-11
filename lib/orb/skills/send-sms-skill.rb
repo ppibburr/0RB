@@ -3,8 +3,8 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
 require 'orb/skills/send-mail-skill'
 
 class SMSSkill < SendMailSkill
-  def initialize contacts: ORB::CONTACTS_CONFIG_PATH, config: ORB::MAIL_CONFIG_PATH
-    super
+  def initialize cfg={},contacts: ORB::CONTACTS_CONFIG_PATH, config: ORB::MAIL_CONFIG_PATH
+    super()
     
     matches(/text (.*?) (.*)/, /message (.*?) (.*)/)
   end

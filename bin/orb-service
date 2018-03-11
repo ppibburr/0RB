@@ -1,21 +1,23 @@
 #!/usr/bin/env ruby
-
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib')
+
+require 'sinatra'
 
 require 'orb'
 require 'orb/skills/mpv-skill'
 require 'orb/skills/android-adb-skill'
 require 'orb/skills/roku-skill'
 require 'orb/skills/chrome-cast-skill'
+require 'orb/skills/cc-discover-skill'
 require 'orb/skills/cc-broadcast-skill'
 require 'orb/skills/tplink-wifi-plug-skill'
 require 'orb/skills/send-mail-skill'
 require 'orb/skills/send-sms-skill'
 require 'orb/skills/gdax-rate-skill'
+require 'orb/skills/ihome-discover-skill'
+require 'orb/skills/ihome-device-skill'
 
-ORB.init
-
-require 'sinatra'
+ORB.init self
 
 post "/command" do
   request.body.rewind

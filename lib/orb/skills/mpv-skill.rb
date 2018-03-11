@@ -78,7 +78,7 @@ class MPVSkill < ORB::Skill
     songs
   end
   
-  def initialize
+  def initialize cfg={}
     super
     
     player
@@ -101,6 +101,6 @@ class MPVSkill < ORB::Skill
      
      play_songs songs, true
      
-     ''
+     player.inspect
   end
 end

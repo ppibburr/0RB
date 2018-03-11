@@ -44,7 +44,7 @@ class ADBDevice
     end
   end
 
-  def input text
+  def input text, *o
     input! text: text
   end
   

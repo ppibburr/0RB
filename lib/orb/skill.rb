@@ -48,9 +48,36 @@ module ORB
       @skills ||= []
     end
     
-    def initialize *o
+    attr_reader :config, :name
+    def initialize config={}, *o
+      @config=config
+      @name = config['name'] ||= "NoName"
       Skill.skills << self
+      add_route "" do |app|
+        render app
+      end
     end
+    
+    def render app=nil
+      app.content_type "text/plain"
+      self.inspect
+    end
+    
+    def self.routes
+      @routes ||= {}
+    end
+    
+    def add_route r, &b; p :route, r
+      p r = "/skill/#{name}#{r == "" ? "" : "/"}#{r.gsub(/^\//,'')}".gsub(" ","+")
+      Skill.routes[r] = b
+      Skill.route.send :get, r do
+        p r
+        p Skill.routes
+        Skill.routes[r].call self
+      end
+    rescue => e
+      p e
+    end    
     
     def matches *r
       @matches = r if !r.empty?
@@ -59,7 +86,11 @@ module ORB
     
     def self.find text
       skills.find do |s| s.match? text end
-    end    
+    end
+    
+    class << self
+      attr_accessor :route
+    end        
   end
 
   class UnhandledSkill < Skill

@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+require 'open-uri'
+require 'json'
+
+ARGV.find do |a|
+  if a =~ /\-\-skill=(.*)/
+  
+    puts open("http://0.0.0.0:4567/skill/"+$1).read
+
+    exit
+  end
+end
+
+ARGV.find do |a|
+  if a =~ /\-\-match=(.*)/
+  
+    puts `curl -d '{"text": "#{$1}"}' http://0.0.0.0:4567/command`
+
+    exit
+  end
+end
+
+device = nil
+ARGV.find do |a|
+  if a =~ /\-\-device=(.*)/
+    device = $1
+  end
+end
+
+if device
+  case a=ARGV.last.downcase
+  when /^(on|off)$/
+    `ruby #{__FILE__} --match="turn #{$1} #{device}"`
+  when /up|down|left|right|enter|ok|select|back|home|pause|play|resume/
+    `ruby #{__FILE__} --match="press #{a} on #{device}"`
+  else
+    if ARGV.index("--input")
+      `ruby #{__FILE__} --match="input #{a} on #{device}"`
+      exit
+    end
+
+    if ARGV.index("--search")
+      `ruby #{__FILE__} --match="search #{a} on #{device}"`
+      exit
+    end
+    
+    if ARGV.find do |arg| arg =~ /\-\-(play|cast)/ end
+      t = $1
+      if ARGV.find do |arg| arg =~ /\-\-provider=(.*)/ end 
+        `ruby #{__FILE__} --match="#{t} #{a} from #{$1} on #{device}"`
+        exit
+      end
+    end    
+  end
+end
+
+if ARGV.find do |a| a=~ /\-\-mpv=(.*)/ end
+  `ruby #{__FILE__} --match="unset device"`
+  `ruby #{__FILE__} --match="play #{$1} music"`
+  exit
+end
+
+if ARGV.find do |a| a=~ /\-\-text=(.*)/ end
+  `ruby #{__FILE__} --match="text #{$1} #{ARGV.last}"`
+  exit
+end
+
+if ARGV.find do |a| a=~ /\-\-mail=(.*)/ end
+  `ruby #{__FILE__} --match="email #{$1} #{ARGV.last}"`
+  exit
+end
+
+`ruby #{__FILE__} --match="#{ARGV.join(" ")}"`
+

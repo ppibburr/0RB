@@ -4,6 +4,10 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', '..')
 require 'orb/device'
 
 module ChromeCast  
+  def self.get_binary
+    "python3 -m catt.cli"
+  end
+
   module RawChromeCast
     KEYS = {
       "volume up":   :volumeup,
@@ -108,7 +112,7 @@ module ChromeCast
     
     private
     def command *o
-      cmd="python3 -m catt.cli -d \"#{name}\" #{o.join(" ")}"
+      cmd="#{ChromeCast.get_binary} -d \"#{name}\" #{o.join(" ")}"
       p cmd if true
       `#{cmd}`
     end

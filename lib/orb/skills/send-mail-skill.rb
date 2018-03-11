@@ -7,8 +7,8 @@ class SendMailSkill < ORB::Skill
   include ORB::Mail
 
   attr_reader :contacts, :config
-  def initialize contacts: ORB::CONTACTS_CONFIG_PATH, config: ORB::MAIL_CONFIG_PATH
-    super()
+  def initialize cfg={}, contacts: ORB::CONTACTS_CONFIG_PATH, config: ORB::MAIL_CONFIG_PATH
+    super(cfg)
     
     @contacts = {}
     
