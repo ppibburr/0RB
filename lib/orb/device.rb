@@ -80,6 +80,20 @@ module ORB
               /^(turn|power) (on|off) #{name!}/,
               /^(toggle) #{name!}/,               
               /^(#{name!}) (on|off)/)    
+              
+        (@config['pronounced'] ||= []).each do |n|
+		  matches.push(/^(press) (.*) (.*) times on #{n}/,
+               /^(play) (.*) on (.*) from (.*) on #{n}/, 
+               /^(play) (.*) from (.*) on #{n}/,
+               /^(cast) (.*) on (.*) from (.*) on #{n}/, 
+               /^(cast) (.*) from (.*) on #{n}/,               
+               /^(search) (.*) on (.*) on #{n}/, 
+               /^(play|swipe|press|input|search|cast) (.*) on #{n}/,
+               /^(turn|power) (on|off) the #{n}/,
+               /^(turn|power) (on|off) #{n}/,
+               /^(toggle) #{n}/,               
+               /^(#{n}) (on|off)/)        
+	  end              
     end 
     
     def match? text
