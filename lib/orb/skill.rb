@@ -48,14 +48,38 @@ module ORB
       @skills ||= []
     end
     
-    attr_reader :config, :name
+    attr_reader :config, :name, :rest_params
     def initialize config={}, *o
+      @rest_params = o
       @config=config
-      @name = config['name'] ||= "NoName"
+  
       Skill.skills << self
+
+      init
+    end
+  
+    def init
+      @name = config['name'] ||= "NoName"
       add_route "" do |app|
         render app
-      end
+      end     
+      
+      add_route "/restart" do |app|
+        restart
+        render app
+      end  
+      
+      add_route "/ui" do
+        ui
+      end       
+    end
+    
+    def ui
+      "<code>Not much to see...</code>"
+    end
+    
+    def restart
+      init
     end
     
     def render app=nil

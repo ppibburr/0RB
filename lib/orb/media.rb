@@ -44,7 +44,7 @@ module ORB
       attr_accessor :player
       
       def initialize
-        super
+        super({'name'=>"playback"})
         matches(/^pause$/, /^play$/, /^resume$/, /^next track$/, /^stop$/, /^next$/, /^prev$/, /^previous track$/)
       end
       
@@ -67,6 +67,12 @@ module ORB
         stop       if text.strip == "stop"        
         
         ''
+      end
+      
+      def ui
+        """
+          <button id=prev><<</button><button id=toggle>||></button><button id=next>>></button>
+        """
       end
       
       def self.instance

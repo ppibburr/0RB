@@ -58,8 +58,36 @@ class RokuSkill < ORB::DeviceSkill
       end
     end
     
+    def ui_key key
+    p :KEY,key
+      key = :select if key.to_s.downcase.to_sym == :enter
+    p key
+      super key
+    end
+    
     def set_power_state state
-      roku.power_on
+      key_press :home
+      #roku.power_on
+    end
+  
+    def toggle
+      set_power_state 1
+    end
+    
+    def on?
+      roku.boot_info[:power_mode] == "PowerOn"
+    end
+    
+    def off?
+      roku.boot_info[:power_mode] != "PowerOn"
+    end
+    
+    def on
+      toggle
+    end
+    
+    def off
+      toggle
     end
     
     def input text
@@ -69,5 +97,11 @@ class RokuSkill < ORB::DeviceSkill
   
   def initialize config={}
     super config, RawDevice, config
+  end
+  
+  def render app=nil
+    app.content_type "text/plain"
+  
+    raw.roku.boot_info.inspect
   end
 end

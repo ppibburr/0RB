@@ -4,6 +4,9 @@ $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib')
 require 'sinatra'
 
 require 'orb'
+
+ORB::Skill.route = self
+
 require 'orb/skills/mpv-skill'
 require 'orb/skills/android-adb-skill'
 require 'orb/skills/roku-skill'

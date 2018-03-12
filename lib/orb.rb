@@ -76,5 +76,6 @@ module ORB
 end
 
 require "orb/skill"
+ORB::Skill.route = self
 require "orb/media"
 require 'orb/device'

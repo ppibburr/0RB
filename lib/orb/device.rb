@@ -20,6 +20,12 @@ module ORB
       def set_power_state  state;              end
       def play             item, provider=nil; end
       
+      def ui_key key
+        key_press key
+        
+        nil
+      end
+      
       def on?; end
       def off?; end
       
@@ -40,32 +46,58 @@ module ORB
       end
     end 
   
-    attr_reader :raw, :config, :name
+    attr_reader :raw, :config, :name, :raw_params, :raw_class
     def name!; @name.downcase; end
     def initialize config={}, klass=TestRawDevice, *o
        @config = config
        @name = config['name']
-       @raw  = klass.new(*o)
+
+       @raw_params = o
+       @raw_class  = klass
        
        super config
        
-       add_route "/ui" do
-         ui
-       end
+       init
+    end
+  
+    def init
+      super
+    
+      @raw  = raw_class.new(*raw_params)
+     
+      @matches = []
+    
+      @raw.load_providers config
        
-       @raw.load_providers config
-       
-       matches(/^(press) (.*) (.*) times on #{name!}/,
-               /^(play) (.*) on (.*) from (.*) on #{name!}/, 
-               /^(play) (.*) from (.*) on #{name!}/,
-               /^(cast) (.*) on (.*) from (.*) on #{name!}/, 
-               /^(cast) (.*) from (.*) on #{name!}/,               
-               /^(search) (.*) on (.*) on #{name!}/, 
-               /^(play|swipe|press|input|search|cast) (.*) on #{name!}/,
-               /^(turn|power) (on|off) the #{name!}/,
-               /^(turn|power) (on|off) #{name!}/,
-               /^(toggle) #{name!}/,               
-               /^(#{name!}) (on|off)/)
+      matches(/^(press) (.*) (.*) times on #{name!}/,
+              /^(play) (.*) on (.*) from (.*) on #{name!}/, 
+              /^(play) (.*) from (.*) on #{name!}/,
+              /^(cast) (.*) on (.*) from (.*) on #{name!}/, 
+              /^(cast) (.*) from (.*) on #{name!}/,               
+              /^(search) (.*) on (.*) on #{name!}/, 
+              /^(play|swipe|press|input|search|cast) (.*) on #{name!}/,
+              /^(turn|power) (on|off) the #{name!}/,
+              /^(turn|power) (on|off) #{name!}/,
+              /^(toggle) #{name!}/,               
+              /^(#{name!}) (on|off)/)    
+    end 
+    
+    def match? text
+      if text=~/^ui\-/
+        text = text.gsub(/^ui\-/,'')
+        r = super(text)
+        if r
+          @ui_evt=true
+          return r
+        end
+        
+        @ui_evt=false
+        text = "ui-"+text
+      end
+      
+      @ui_evt=false
+      
+      super text       
     end
     
     def ui
@@ -241,7 +273,7 @@ module ORB
         var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance 
         xmlhttp.open('POST', '/command');
         xmlhttp.setRequestHeader('Content-Type', 'application/json');
-        xmlhttp.send('{\"text\": \"press '+key+' on #{name.downcase}\"}');
+        xmlhttp.send('{\"text\": \"ui-press '+key+' on #{name.downcase}\"}');
       }
       //document.body.requestFullscreen();
       </script>
@@ -249,6 +281,7 @@ module ORB
     end
     
     def execute text
+      sound = 'O K'
       case @match[2]
       
       when /turn|power|#{name}/
@@ -268,7 +301,8 @@ module ORB
           
           raw.repeat_key_press @match[3], q.to_i
         else
-          raw.key_press @match[3]
+          raw.key_press @match[3]     if !@ui_evt
+          sound=raw.ui_key(@match[3]) if @ui_evt
         end
         
       when /(play|swipe|search|input|cast)/
@@ -305,7 +339,7 @@ module ORB
       
       DeviceSkill.active_device = self
       
-      say 'O K'
+      say sound if sound
       ''
     end
     

@@ -52,7 +52,8 @@ module Roku
       pause: 'Play',
       volume_up: 'VolumeUp',
       volume_down: 'VolumeDown',
-      volume_mute: 'VolumeMute'
+      volume_mute: 'VolumeMute',
+      power: 'Home'
     }.freeze
 
     attr_reader :location, :boot_info
