@@ -69,32 +69,22 @@ module ORB
     
       @raw.load_providers config
        
-      matches(/^(press) (.*) (.*) times on #{name!}/,
-              /^(play) (.*) on (.*) from (.*) on #{name!}/, 
-              /^(play) (.*) from (.*) on #{name!}/,
-              /^(cast) (.*) on (.*) from (.*) on #{name!}/, 
-              /^(cast) (.*) from (.*) on #{name!}/,               
-              /^(search) (.*) on (.*) on #{name!}/, 
-              /^(play|swipe|press|input|search|cast) (.*) on #{name!}/,
-              /^(turn|power) (on|off) the #{name!}/,
-              /^(turn|power) (on|off) #{name!}/,
-              /^(toggle) #{name!}/,               
-              /^(#{name!}) (on|off)/)    
-              
-        (@config['pronounced'] ||= []).each do |n|
-		  matches.push(/^(press) (.*) (.*) times on #{n}/,
-               /^(play) (.*) on (.*) from (.*) on #{n}/, 
-               /^(play) (.*) from (.*) on #{n}/,
-               /^(cast) (.*) on (.*) from (.*) on #{n}/, 
-               /^(cast) (.*) from (.*) on #{n}/,               
-               /^(search) (.*) on (.*) on #{n}/, 
-               /^(play|swipe|press|input|search|cast) (.*) on #{n}/,
-               /^(turn|power) (on|off) the #{n}/,
-               /^(turn|power) (on|off) #{n}/,
-               /^(toggle) #{n}/,               
-               /^(#{n}) (on|off)/)        
-	  end              
+      matches(/^(press) (.*) (.*) times on #{pronounced!}/,
+              /^(play) (.*) on (.*) from (.*) on #{pronounced!}/, 
+              /^(play) (.*) from (.*) on #{pronounced!}/,
+              /^(cast) (.*) on (.*) from (.*) on #{pronounced!}/, 
+              /^(cast) (.*) from (.*) on #{pronounced!}/,               
+              /^(search) (.*) on (.*) on #{pronounced!}/, 
+              /^(play|swipe|press|input|search|cast) (.*) on #{pronounced!}/,
+              /^(turn|power) (on|off) the #{pronounced!}/,
+              /^(turn|power) (on|off) #{pronounced!}/,
+              /^(toggle) #{pronounced!}/,               
+              /^(#{pronounced!}) (on|off)/)                         
     end 
+    
+    def pronounced!
+      "(#{[name!].push(*(@config['pronounced'] ||= [])).join("|")})"
+    end
     
     def match? text
       if text=~/^ui\-/
@@ -102,6 +92,7 @@ module ORB
         r = super(text)
         if r
           @ui_evt=true
+          @match.pop
           return r
         end
         
@@ -111,7 +102,11 @@ module ORB
       
       @ui_evt=false
       
-      super text       
+      if r=super(text)       
+        @match.pop
+      end
+
+      return r
     end
     
     def ui
@@ -296,6 +291,7 @@ module ORB
     
     def execute text
       sound = 'O K'
+      p @match
       case @match[2]
       
       when /turn|power|#{name}/
