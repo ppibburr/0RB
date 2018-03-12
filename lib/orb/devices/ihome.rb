@@ -11,7 +11,7 @@ module IHome
             "-H 'content-type: application/json' "+
             "-d '#{({email: user, password: pass}).to_json}'"
     
-    p cmd if true
+    puts cmd if true
         
     JSON.parse(`#{cmd}`)['evrythng_api_key']
   end
@@ -22,7 +22,7 @@ module IHome
 	        "-H 'authorization: #{key}' "+
 	        "-H 'cache-control: no-cache'"
 	        
-	  p cmd if true
+	  puts cmd if true
 	
     JSON.parse(`#{cmd}`)
   end
@@ -43,18 +43,43 @@ module IHome
       @id     = config['id']
     end
     
-    def write uri, key, body
+    def write uri, body
       cmd = "curl -X POST "+
             "#{uri} "+
-            "-H 'authorization: #{key}' "+
+            "-H 'authorization: #{config['key']}' "+
             "-H 'cache-control: no-cache' "+
             "-H 'content-type: application/json' "+
             "-d '#{body}'"  
             
-      p cmd if true
+      puts cmd if true
       
       `#{cmd}`
     end
+    
+    def properties
+      uri = "https://api.evrythng.com/thngs/#{id}/properties"
+    
+      cmd = "curl "+
+            "#{uri} "+
+            "-H 'authorization: #{config['key']}' "+
+            "-H 'cache-control: no-cache' "+
+            "-H 'content-type: application/json' " +
+            "-o -"
+            
+      puts cmd if true
+      
+      JSON.parse(`#{cmd}`)
+    end
+    
+    def property name
+      prop = (((a=properties).find do |o| o['key'] == name.to_s end) || {})["value"] 
+      p a
+      if prop.strip =~ /^([0-9]+)$/
+        return $1.to_i
+      end
+      
+      prop
+    end    
   end
 
 
@@ -64,6 +89,24 @@ module IHome
     def on;  end
     def off; end
   
+    def on?
+      property(:currentpowerstate1) == 1 
+    end
+  
+    def off?
+      !on?
+    end
+  
+    def state
+      on? ? 1 : 0
+    end
+    
+    def key_press key
+      return unless key == 'power'
+    
+      toggle
+    end
+   
     def set_power_state state
       send [:off,:on][state]
     end
@@ -73,11 +116,11 @@ module IHome
     include Plug
     
     def on
-      write "https://api.evrythng.com/thngs/#{id}/properties/targetpowerstate1", config['key'], ([{value: 1}]).to_json
+      write "https://api.evrythng.com/thngs/#{id}/properties/targetpowerstate1", ([{value: 1}]).to_json
     end
     
     def off
-      write "https://api.evrythng.com/thngs/#{id}/properties/targetpowerstate1", config['key'], ([{value: 0}]).to_json
+      write "https://api.evrythng.com/thngs/#{id}/properties/targetpowerstate1", ([{value: 0}]).to_json
     end
   end
 
@@ -85,11 +128,11 @@ module IHome
     include Plug
     
     def on
-      write "https://api.evrythng.com/thngs/#{id}/actions/_turnOn", config['key'],  ({type: '_turnOn'}).to_json
+      write "https://api.evrythng.com/thngs/#{id}/actions/_turnOn", ({type: '_turnOn'}).to_json
     end
     
     def off
-      write "https://api.evrythng.com/thngs/#{id}/actions/_turnOff", config['key'], ({type: '_turnOff'}).to_json
+      write "https://api.evrythng.com/thngs/#{id}/actions/_turnOff", ({type: '_turnOff'}).to_json
     end
   end
 end

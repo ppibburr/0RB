@@ -32,8 +32,15 @@ if device
   case a=ARGV.last.downcase
   when /^(on|off)$/
     `ruby #{__FILE__} --match="turn #{$1} #{device}"`
-  when /up|down|left|right|enter|ok|select|back|home|pause|play|resume/
+    exit
+  when /^(up|down|left|right|enter|ok|select|back|home|pause|play|resume|power)$/
     `ruby #{__FILE__} --match="press #{a} on #{device}"`
+    exit
+  when /^(state)$/
+  
+  when /^(toggle)$/
+    `ruby #{__FILE__} --match="toggle #{device}"`  
+    exit
   else
     if ARGV.index("--input")
       `ruby #{__FILE__} --match="input #{a} on #{device}"`
@@ -49,8 +56,9 @@ if device
       t = $1
       if ARGV.find do |arg| arg =~ /\-\-provider=(.*)/ end 
         `ruby #{__FILE__} --match="#{t} #{a} from #{$1} on #{device}"`
-        exit
       end
+      
+      exit
     end    
   end
 end

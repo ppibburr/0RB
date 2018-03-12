@@ -17,6 +17,6 @@ end
 
 class IHomeISP6Plug < IHomeDeviceSkill
   def initialize config
-    super config, IHome::ISP5, config
+    super config, IHome::ISP6, config
   end
 end

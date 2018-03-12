@@ -20,6 +20,7 @@ class ADBDevice
     play:   85,
     on:     26,
     off:    26,
+    power:  26,
     menu:   82,
     search: 84,
   }
@@ -80,6 +81,10 @@ class ADBDevice
   
   def swipe x,y,x1,y1
     shell "input swipe #{x} #{y} #{x1} #{y1}"
+  end
+  
+  def toggle
+    key_press :power
   end
   
   attr_accessor :ip, :name

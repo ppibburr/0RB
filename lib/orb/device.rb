@@ -6,7 +6,7 @@ require 'orb/provider'
 module ORB
   class DeviceSkill < ORB::Skill
     DEVICE_KEYWORDS = [
-      /^(play|search|watch|listen|press|input|swipe|cast)/,
+      /^(play|search|watch|listen|press|input|swipe|cast|toggle)/,
     ]  
   
     module RawDevice
@@ -19,6 +19,15 @@ module ORB
       def search           query, provider=nil;end
       def set_power_state  state;              end
       def play             item, provider=nil; end
+      
+      def on?; end
+      def off?; end
+      
+      def state; end
+      
+      def toggle
+        on? ? off : on
+      end
     end
     
     class TestRawDevice
@@ -55,6 +64,7 @@ module ORB
                /^(play|swipe|press|input|search|cast) (.*) on #{name!}/,
                /^(turn|power) (on|off) the #{name!}/,
                /^(turn|power) (on|off) #{name!}/,
+               /^(toggle) #{name!}/,               
                /^(#{name!}) (on|off)/)
     end
     
@@ -219,7 +229,7 @@ module ORB
       </div>
       <script>
 
-      var l = ['up','down','left','right','enter','home','back', 'menu'];
+      var l = ['up','down','left','right','enter','home','back', 'menu', 'power'];
       for (i=0; i < l.length; i++) {
         console.log(l)
         document.getElementById(l[i]).onclick = keypress;
@@ -285,6 +295,8 @@ module ORB
      
           raw.send cmd.to_sym, @match[3], *rest
         end      
+      when /toggle/
+        raw.toggle
       else
         say "The device, #{name}, does not know that."
       
