@@ -10,16 +10,29 @@ rescue => e
   p e
 end
 
-c=configuration = Pocketsphinx::Configuration::KeywordSpotting.new('Alexa');
+c=configuration = Pocketsphinx::Configuration.default#::KeywordSpotting.new('Alexa');
+
+c['vad_threshold'] = 4
+
 r=Pocketsphinx::LiveSpeechRecognizer.new(c)
 
+def r.pause &b
+  super
+rescue
+  b.call
+end
+
+def r.algorithm
+  :after_speech
+end
+
 r.recognize do |speech|
-begin
-  #r.pause do
+  begin
+  r.pause do
     puts "Detected Wake: #{speech}"
 
-    puts "STT: #{text}"
-  #end
+  #  puts "STT: #{text}"
+  end
  rescue => e
    p e
  end
