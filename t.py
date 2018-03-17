@@ -26,7 +26,9 @@ def gettoken():
 	url = "https://api.amazon.com/auth/o2/token"
 	r = requests.post(url, data = payload)
 	resp = json.loads(r.text)
-	return resp['access_token']
+	t = resp['access_token']
+	print(t)
+	return t
 
 def asr():
 	# https://developer.amazon.com/public/solutions/alexa/alexa-voice-service/rest/speechrecognizer-requests
