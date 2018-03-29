@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 $: << File.join(File.expand_path(File.dirname(__FILE__)), '..', 'lib')
 
+unless (ANNOUNCE_UNKNOWN = !(idx=ARGV.index("--no-announce-unknown")))
+  ARGV.delete_at idx
+end
+
 require 'sinatra'
 
 require 'orb'
@@ -23,6 +27,8 @@ require 'orb/skills/ihome-device-skill'
 ORB.init self
 
 post "/command" do
+  content_type "text/json"
+
   request.body.rewind
   obj = JSON.parse request.body.read
   
@@ -31,7 +37,7 @@ post "/command" do
   if txt =~ /^set device (.*)/
     if d=ORB::DeviceSkill.find($1.strip)
       ORB::DeviceSkill.active_device = d
-      next ''
+      next "{}\n"
     else
       ORB::SelfSkill.instance.say "No Device named, #{$1}"
     end
@@ -43,7 +49,8 @@ post "/command" do
     end
   
     ORB::DeviceSkill.active_device = nil
-    next ''
+   
+    next "{}\n"
   end
   
   ORB::DeviceSkill::DEVICE_KEYWORDS.each do |kw|
@@ -60,12 +67,16 @@ post "/command" do
     end
   end
   
-  if skill = ORB::Skill.find(txt)
+  response = {}
   
-    next skill.execute(txt.strip)
+  if skill = ORB::Skill.find(txt)
+    skill.execute(text: txt.strip, response: response)
+    next response.to_json
   end
   
-  ORB::UnhandledSkill.execute
+  ORB::UnhandledSkill.execute text: txt, response: response, speak: ANNOUNCE_UNKNOWN
+  
+  next response.to_json
 end
 
 get "/devices" do

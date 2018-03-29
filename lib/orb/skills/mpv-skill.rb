@@ -90,7 +90,7 @@ class MPVSkill < ORB::Skill
             /play (.*) on youtube$/) 
   end
   
-  def execute text=''
+  def execute text: '', response: {}
      super
      
      songs = search_yt match[2]

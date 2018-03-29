@@ -50,7 +50,7 @@ module ORB
       
       attr_accessor :default_player
       
-      def execute text
+      def execute text: '', response: {}
         if !player
           if !ORB::Media::MediaSkill.instance.player and d=ORB::Media::MediaSkill.instance.default_player
             p @player = d

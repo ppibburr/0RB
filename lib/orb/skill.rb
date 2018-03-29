@@ -38,7 +38,7 @@ module ORB
       end
     end
     
-    def execute text
+    def execute text: '', response: {}
       say text
       
       return text
@@ -118,13 +118,13 @@ module ORB
   end
 
   class UnhandledSkill < Skill
-    def execute text="Sorry. I do not know that one."
-      say text
-      ''
+    def execute text: "", response: {}, speak: true
+      say "Sorry. I do not know that one." if speak
+      response[:err] = "unknown"
     end
     
-    def self.execute text="Sorry. I do not know that one."
-      (@ins ||= new).execute text
+    def self.execute text: "", response: {}, speak: true
+      (@ins ||= new).execute text: text, response: response, speak: speak
     end
   end
 
@@ -135,7 +135,7 @@ module ORB
       matches(/naked/, /color is your underwear/, /wearing panties|underwear/)
     end
     
-    def execute text
+    def execute text: '', response: {}
       case matches.index(@match[0])
       when 0
         say "Yes"
@@ -144,7 +144,7 @@ module ORB
       when 2
         say "Silly, I am naked"
       else
-        UnhandledSkill.execute
+        UnhandledSkill.execute text: text, response: response
       end
       ''
     end

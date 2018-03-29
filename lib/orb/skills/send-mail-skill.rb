@@ -33,7 +33,7 @@ class SendMailSkill < ORB::Skill
     @contacts = JSON.parse(open(file).read)
   end
   
-  def execute text
+  def execute text: '', response: {}
     contact = get_contact(@match[2])
     msg     = @match[3]
     

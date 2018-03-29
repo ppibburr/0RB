@@ -20,7 +20,7 @@ class Text2CCSkill < ORB::Skill
   end
   
   attr_reader :mimic, :voice
-  def execute text
+  def execute text: '', response: {}
     if text =~ /^broadcast (.*)/
       `#{ORB::Skill.get_speak_command($1)} -o #{file= "./tmp-cc.wav"}`
       wave = WaveInfo.new(file) 

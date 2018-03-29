@@ -31,31 +31,31 @@ end
 if device
   case a=ARGV.last.downcase
   when /^(on|off)$/
-    `ruby #{__FILE__} --match="turn #{$1} #{device}"`
+    puts `ruby #{__FILE__} --match="turn #{$1} #{device}"`
     exit
   when /^(up|down|left|right|enter|ok|select|back|home|pause|play|resume|power)$/
-    `ruby #{__FILE__} --match="press #{a} on #{device}"`
+    puts `ruby #{__FILE__} --match="press #{a} on #{device}"`
     exit
   when /^(state)$/
   
   when /^(toggle)$/
-    `ruby #{__FILE__} --match="toggle #{device}"`  
+    puts `ruby #{__FILE__} --match="toggle #{device}"`  
     exit
   else
     if ARGV.index("--input")
-      `ruby #{__FILE__} --match="input #{a} on #{device}"`
+      puts `ruby #{__FILE__} --match="input #{a} on #{device}"`
       exit
     end
 
     if ARGV.index("--search")
-      `ruby #{__FILE__} --match="search #{a} on #{device}"`
+      puts `ruby #{__FILE__} --match="search #{a} on #{device}"`
       exit
     end
     
     if ARGV.find do |arg| arg =~ /\-\-(play|cast)/ end
       t = $1
       if ARGV.find do |arg| arg =~ /\-\-provider=(.*)/ end 
-        `ruby #{__FILE__} --match="#{t} #{a} from #{$1} on #{device}"`
+        puts `ruby #{__FILE__} --match="#{t} #{a} from #{$1} on #{device}"`
       end
       
       exit
@@ -64,20 +64,20 @@ if device
 end
 
 if ARGV.find do |a| a=~ /\-\-mpv=(.*)/ end
-  `ruby #{__FILE__} --match="unset device"`
-  `ruby #{__FILE__} --match="play #{$1} music"`
+  puts `ruby #{__FILE__} --match="unset device"`
+  puts `ruby #{__FILE__} --match="play #{$1} music"`
   exit
 end
 
 if ARGV.find do |a| a=~ /\-\-text=(.*)/ end
-  `ruby #{__FILE__} --match="text #{$1} #{ARGV.last}"`
+  puts `ruby #{__FILE__} --match="text #{$1} #{ARGV.last}"`
   exit
 end
 
 if ARGV.find do |a| a=~ /\-\-mail=(.*)/ end
-  `ruby #{__FILE__} --match="email #{$1} #{ARGV.last}"`
+  puts `ruby #{__FILE__} --match="email #{$1} #{ARGV.last}"`
   exit
 end
 
-`ruby #{__FILE__} --match="#{ARGV.join(" ")}"`
+puts `ruby #{__FILE__} --match="#{ARGV.join(" ")}"`
 

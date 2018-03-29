@@ -289,7 +289,7 @@ module ORB
       """
     end
     
-    def execute text
+    def execute text: '', response: {}
       sound = 'O K'
       p @match
       case @match[2]

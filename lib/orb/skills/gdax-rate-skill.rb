@@ -13,7 +13,7 @@ class GDAXRateSkill < ORB::Skill
     )
   end
   
-  def execute text
+  def execute text: '', response: {}
     fetch(@match[2])
     ''
   end
