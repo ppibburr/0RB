@@ -7,7 +7,7 @@ require 'orb/providers/roku/youtube'
 
 class YouTubeRokuProvider < ORB::Media::MediaProvider
   def initialize
-    super :youtube
+    super :youtube, ['you to', 'you do', 'you tube']
   end
   
   def play_item item, device  
